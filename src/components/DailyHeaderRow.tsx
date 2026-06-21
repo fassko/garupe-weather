@@ -1,9 +1,11 @@
-import { format } from "date-fns";
+import { format, isWeekend } from "date-fns";
 import { getConditionEmoji, getWindDirection } from "@/lib/weather/parse";
 import type { DailySummary } from "@/lib/weather/daily";
 
 const headerRowClassName =
   "border-t-2 border-sky-300 bg-sky-100 text-sky-900 dark:border-sky-700 dark:bg-sky-950 dark:text-sky-200";
+
+const weekendDateClassName = "text-red-600 dark:text-red-400";
 
 interface DailyHeaderRowProps {
   date: Date;
@@ -28,10 +30,14 @@ function formatPrecipSummary(summary: DailySummary): string {
 }
 
 export function DailyHeaderRow({ date, summary, variant }: DailyHeaderRowProps) {
+  const dateClassName = `whitespace-nowrap px-4 py-2 text-xs font-semibold uppercase tracking-wide${
+    isWeekend(date) ? ` ${weekendDateClassName}` : ""
+  }`;
+
   if (variant === "hourly") {
     return (
       <tr className={headerRowClassName}>
-        <td className="whitespace-nowrap px-4 py-2 text-xs font-semibold uppercase tracking-wide">
+        <td className={dateClassName}>
           {format(date, "EEEE, MMMM d")}
         </td>
         <td className="px-4 py-2">
@@ -49,7 +55,7 @@ export function DailyHeaderRow({ date, summary, variant }: DailyHeaderRowProps) 
 
   return (
     <tr className={headerRowClassName}>
-      <td className="whitespace-nowrap px-4 py-2 text-xs font-semibold uppercase tracking-wide">
+      <td className={dateClassName}>
         {format(date, "EEEE, MMMM d")}
       </td>
       <td className="px-4 py-2 text-sm font-semibold tabular-nums">

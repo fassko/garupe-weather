@@ -1,6 +1,6 @@
 "use client";
 
-import { addDays, format } from "date-fns";
+import { addDays, format, isWeekend } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
 import {
   Bar,
@@ -89,6 +89,8 @@ function formatTooltipLabel(
   return format(new Date(point.time), "EEE, MMM d · HH:mm");
 }
 
+const WEEKEND_TICK_COLOR = "#dc2626";
+
 const CHART_COLORS = {
   light: {
     grid: "#e2e8f0",
@@ -128,7 +130,16 @@ export function WeatherChart({ forecasts }: WeatherChartProps) {
   const data = buildChartData(forecasts);
   const daySegments = useMemo(() => getDaySegments(data), [data]);
   const dayTickLabels = useMemo(
-    () => new Map(daySegments.map((segment) => [segment.midIndex, segment.label])),
+    () =>
+      new Map(
+        daySegments.map((segment) => [
+          segment.midIndex,
+          {
+            label: segment.label,
+            isWeekendDay: isWeekend(new Date(`${segment.dayKey}T12:00:00`)),
+          },
+        ]),
+      ),
     [daySegments],
   );
   const isDark = useIsDark();
@@ -164,11 +175,26 @@ export function WeatherChart({ forecasts }: WeatherChartProps) {
                 type="number"
                 domain={[0, Math.max(data.length - 1, 0)]}
                 ticks={daySegments.map((segment) => segment.midIndex)}
-                tick={{ fontSize: 12, fill: colors.tick, fontWeight: 500 }}
-                tickFormatter={(value) => dayTickLabels.get(Number(value)) ?? ""}
+                tick={({ x, y, payload }) => {
+                  const tick = dayTickLabels.get(Number(payload.value));
+                  if (!tick) return null;
+
+                  return (
+                    <text
+                      x={x}
+                      y={y}
+                      dy={8}
+                      textAnchor="middle"
+                      fill={tick.isWeekendDay ? WEEKEND_TICK_COLOR : colors.tick}
+                      fontSize={12}
+                      fontWeight={500}
+                    >
+                      {tick.label}
+                    </text>
+                  );
+                }}
                 axisLine={{ stroke: colors.dayDivider }}
                 tickLine={false}
-                dy={8}
               />
               <YAxis
                 yAxisId="temp"
