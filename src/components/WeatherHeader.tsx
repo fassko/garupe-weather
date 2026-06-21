@@ -1,9 +1,7 @@
 import { format } from "date-fns";
-import {
-  getConditionEmoji,
-  getConditionLabel,
-  getWindDirection,
-} from "@/lib/weather/parse";
+import { FeelsLikeText } from "@/components/FeelsLikeText";
+import { WindDirection } from "@/components/WindDirection";
+import { getConditionEmoji, getConditionLabel } from "@/lib/weather/parse";
 import type { HourlyForecast, WeatherData } from "@/lib/weather/types";
 
 function findCurrentForecast(forecasts: HourlyForecast[]): HourlyForecast {
@@ -38,8 +36,11 @@ export function WeatherHeader({ data }: WeatherHeaderProps) {
               {Math.round(current.temperature)}°C
             </p>
             <p className="mt-1 text-sky-100">
-              Feels like {Math.round(current.feelsLike)}°C ·{" "}
-              {getConditionLabel(current.iconCode)}
+              <FeelsLikeText
+                temperature={current.temperature}
+                feelsLike={current.feelsLike}
+              />{" "}
+              · {getConditionLabel(current.iconCode)}
             </p>
           </div>
           <span className="text-5xl" aria-hidden="true">
@@ -55,7 +56,8 @@ export function WeatherHeader({ data }: WeatherHeaderProps) {
           <div>
             <dt className="text-xs text-sky-200">Wind</dt>
             <dd className="text-lg font-semibold">
-              {current.windSpeed.toFixed(1)} m/s {getWindDirection(current.windDirection)}
+              {current.windSpeed.toFixed(1)} m/s{" "}
+              <WindDirection degrees={current.windDirection} />
             </dd>
           </div>
           <div>

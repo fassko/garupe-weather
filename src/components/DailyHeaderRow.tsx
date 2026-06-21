@@ -2,7 +2,8 @@
 
 import { format, isWeekend } from "date-fns";
 import type { KeyboardEvent } from "react";
-import { getConditionEmoji, getWindDirection } from "@/lib/weather/parse";
+import { WindDirection } from "@/components/WindDirection";
+import { getConditionEmoji } from "@/lib/weather/parse";
 import type { DailySummary } from "@/lib/weather/daily";
 
 const headerRowClassName =
@@ -35,9 +36,60 @@ function formatPrecipSummary(summary: DailySummary): string {
 }
 
 function dayLabelClassName(date: Date): string {
-  return `whitespace-nowrap px-4 py-2 text-xs font-semibold uppercase tracking-wide${
+  return `whitespace-nowrap px-2 py-2 text-xs font-semibold uppercase tracking-wide sm:px-4${
     isWeekend(date) ? ` ${weekendDateClassName}` : ""
   }`;
+}
+
+function DayLabel({ date, compact = false }: { date: Date; compact?: boolean }) {
+  if (compact) {
+    return (
+      <>
+        <span className="sm:hidden">{format(date, "EEE, MMM d")}</span>
+        <span className="hidden sm:inline">{format(date, "EEEE, MMMM d")}</span>
+      </>
+    );
+  }
+
+  return format(date, "EEEE, MMMM d");
+}
+
+function ExpandArrow({ expanded }: { expanded: boolean }) {
+  return (
+    <svg
+      aria-hidden="true"
+      className={`h-3.5 w-3.5 shrink-0 transition-transform duration-150 ${
+        expanded ? "rotate-90" : ""
+      }`}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <path
+        fillRule="evenodd"
+        d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
+}
+
+function DayLabelCell({
+  date,
+  compact,
+  expanded,
+  showArrow,
+}: {
+  date: Date;
+  compact?: boolean;
+  expanded?: boolean;
+  showArrow: boolean;
+}) {
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      {showArrow ? <ExpandArrow expanded={expanded ?? false} /> : null}
+      <DayLabel date={date} compact={compact} />
+    </span>
+  );
 }
 
 export function DailyHeaderRow({
@@ -71,16 +123,16 @@ export function DailyHeaderRow({
     return (
       <tr className={rowClassName} {...rowProps}>
         <td className={dayLabelClassName(date)} {...toggleCellProps}>
-          {format(date, "EEEE, MMMM d")}
+          <DayLabelCell date={date} compact expanded={expanded} showArrow={Boolean(onToggle)} />
         </td>
-        <td className="px-4 py-2" {...toggleCellProps}>
+        <td className="px-2 py-2 sm:px-4" {...toggleCellProps}>
           <span aria-hidden="true">{getConditionEmoji(summary.representativeIconCode)}</span>
         </td>
-        <td className="px-4 py-2 text-sm font-semibold tabular-nums" {...toggleCellProps}>
+        <td className="px-2 py-2 text-sm font-semibold tabular-nums sm:px-4" {...toggleCellProps}>
           {formatRange(summary.minTemperature, summary.maxTemperature, "°C")}
         </td>
         <td
-          className="px-4 py-2 text-sm font-semibold tabular-nums text-sky-800 dark:text-sky-300"
+          className="px-2 py-2 text-sm font-semibold tabular-nums text-sky-800 sm:px-4 dark:text-sky-300"
           {...toggleCellProps}
         >
           {formatPrecipSummary(summary)}
@@ -92,7 +144,7 @@ export function DailyHeaderRow({
   return (
     <tr className={rowClassName} {...rowProps}>
       <td className={dayLabelClassName(date)} {...toggleCellProps}>
-        {format(date, "EEEE, MMMM d")}
+        <DayLabelCell date={date} compact expanded={expanded} showArrow={Boolean(onToggle)} />
       </td>
       <td className="px-4 py-2 text-sm font-semibold tabular-nums" {...toggleCellProps}>
         {formatRange(summary.minTemperature, summary.maxTemperature, "°C")}
@@ -114,7 +166,7 @@ export function DailyHeaderRow({
         {...toggleCellProps}
       >
         Up to {summary.maxWindSpeed.toFixed(1)} m/s{" "}
-        {getWindDirection(summary.windDirectionAtMaxWind)}
+        <WindDirection degrees={summary.windDirectionAtMaxWind} size="sm" />
       </td>
       <td className="px-4 py-2 text-sm font-semibold tabular-nums" {...toggleCellProps}>
         Avg {summary.avgPressure.toFixed(1)} hPa

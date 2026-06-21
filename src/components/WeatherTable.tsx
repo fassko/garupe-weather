@@ -1,6 +1,7 @@
 import { format } from "date-fns";
+import { FeelsLikeText } from "@/components/FeelsLikeText";
 import { ForecastDaySection } from "@/components/ForecastDaySection";
-import { getWindDirection } from "@/lib/weather/parse";
+import { WindDirection } from "@/components/WindDirection";
 import { groupForecastsByDay, summarizeDay } from "@/lib/weather/daily";
 import type { HourlyForecast } from "@/lib/weather/types";
 
@@ -53,7 +54,13 @@ export function WeatherTable({ forecasts }: WeatherTableProps) {
                         {forecast.temperature.toFixed(1)}°C
                       </td>
                       <td className="px-4 py-2 tabular-nums">
-                        {forecast.feelsLike.toFixed(1)}°C
+                        <FeelsLikeText
+                          temperature={forecast.temperature}
+                          feelsLike={forecast.feelsLike}
+                          precision={1}
+                          variant="table"
+                          showLabel={false}
+                        />
                       </td>
                       <td className="px-4 py-2 tabular-nums">
                         {forecast.precipitation.toFixed(1)} mm
@@ -66,7 +73,7 @@ export function WeatherTable({ forecasts }: WeatherTableProps) {
                       </td>
                       <td className="whitespace-nowrap px-4 py-2 tabular-nums">
                         {forecast.windSpeed.toFixed(1)} m/s{" "}
-                        {getWindDirection(forecast.windDirection)}
+                        <WindDirection degrees={forecast.windDirection} size="sm" />
                       </td>
                       <td className="px-4 py-2 tabular-nums">
                         {forecast.pressure.toFixed(1)} hPa
