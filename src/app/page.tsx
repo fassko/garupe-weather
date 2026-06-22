@@ -5,11 +5,8 @@ import { WeatherChartSection } from "@/components/WeatherChartSection";
 import { WeatherHeader } from "@/components/WeatherHeader";
 import { WeatherTable } from "@/components/WeatherTable";
 import { getHourlyForecast, getLocationPoints } from "@/lib/weather/fetch";
-import {
-  getLocationCookie,
-  setLocationCookie,
-} from "@/lib/weather/location-cookie.server";
-import { isValidLocationId, resolveLocationId } from "@/lib/weather/locations";
+import { getLocationCookie } from "@/lib/weather/location-cookie.server";
+import { resolveLocationId } from "@/lib/weather/locations";
 
 interface HomeProps {
   searchParams: Promise<{ punkts?: string }>;
@@ -38,10 +35,6 @@ export default async function Home({ searchParams }: HomeProps) {
   const { punkts } = await searchParams;
   const savedPunkts = await getLocationCookie();
   const locationId = resolveLocationId(punkts, savedPunkts);
-
-  if (punkts && isValidLocationId(punkts)) {
-    await setLocationCookie(punkts);
-  }
 
   let data;
   let locations;
