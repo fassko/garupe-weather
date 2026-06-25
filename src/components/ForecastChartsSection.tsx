@@ -3,8 +3,8 @@
 import dynamic from "next/dynamic";
 import type { HourlyForecast } from "@/lib/weather/types";
 
-const WeatherChart = dynamic(
-  () => import("@/components/WeatherChart").then((mod) => mod.WeatherChart),
+const ForecastChart = dynamic(
+  () => import("@/components/charts/ForecastChart").then((mod) => mod.ForecastChart),
   {
     ssr: false,
     loading: () => (
@@ -13,10 +13,10 @@ const WeatherChart = dynamic(
   },
 );
 
-interface WeatherChartSectionProps {
+interface ForecastChartsSectionProps {
   forecasts: HourlyForecast[];
 }
 
-export function WeatherChartSection({ forecasts }: WeatherChartSectionProps) {
-  return <WeatherChart forecasts={forecasts} />;
+export function ForecastChartsSection({ forecasts }: ForecastChartsSectionProps) {
+  return <ForecastChart forecasts={forecasts} />;
 }
