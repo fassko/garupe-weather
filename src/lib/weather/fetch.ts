@@ -1,4 +1,3 @@
-import { format, startOfHour } from "date-fns";
 import { LOCATION_POINT_IDS } from "./locations";
 import { parseHourlyForecast, parseNumber } from "./parse";
 import type {
@@ -12,8 +11,24 @@ const WEATHER_API_BASE = "https://videscentrs.lvgmc.lv/data";
 
 export const REVALIDATE_SECONDS = 1800;
 
+/** LVĢMC expects `laiks` in Europe/Riga local time (start of current hour). */
 export function formatLaiks(date: Date): string {
-  return format(startOfHour(date), "yyyyMMddHHmm");
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Riga",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    hour12: false,
+  });
+  const parts = Object.fromEntries(
+    formatter
+      .formatToParts(date)
+      .filter((part) => part.type !== "literal")
+      .map((part) => [part.type, part.value]),
+  );
+  const hour = parts.hour === "24" ? "00" : parts.hour;
+  return `${parts.year}${parts.month}${parts.day}${hour}00`;
 }
 
 export async function getLocationPoints(time?: Date): Promise<WeatherLocationPoint[]> {
