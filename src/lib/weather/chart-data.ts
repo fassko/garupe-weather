@@ -1,4 +1,5 @@
-import { addDays, format } from "date-fns";
+import { addDays, format, type Locale } from "date-fns";
+import { getDatePattern } from "@/lib/date-locale";
 import { groupForecastsByDay } from "./daily";
 import type { HourlyForecast } from "./types";
 
@@ -59,7 +60,7 @@ export function toChartPoints(forecasts: HourlyForecast[]): ChartPoint[] {
   }));
 }
 
-export function getDaySegments(data: ChartPoint[]): DaySegment[] {
+export function getDaySegments(data: ChartPoint[], dateLocale: Locale, locale: string): DaySegment[] {
   if (data.length === 0) return [];
 
   const segments: DaySegment[] = [];
@@ -70,7 +71,7 @@ export function getDaySegments(data: ChartPoint[]): DaySegment[] {
       if (current) segments.push(current);
       current = {
         dayKey: point.dayKey,
-        label: format(new Date(point.time), "EEE d"),
+        label: format(new Date(point.time), getDatePattern(locale, "chartDay"), { locale: dateLocale }),
         start: point.xIndex,
         end: point.xIndex,
         midIndex: point.xIndex,
@@ -88,10 +89,12 @@ export function getDaySegments(data: ChartPoint[]): DaySegment[] {
 export function formatChartTooltipLabel(
   _label: unknown,
   payload: ReadonlyArray<{ payload?: ChartPoint }>,
+  dateLocale: Locale,
+  locale: string,
 ): string {
   const point = payload[0]?.payload;
   if (!point?.time) return String(_label ?? "");
-  return format(new Date(point.time), "EEE, MMM d · HH:mm");
+  return format(new Date(point.time), getDatePattern(locale, "chartTooltip"), { locale: dateLocale });
 }
 
 export function getHourTicks(data: ChartPoint[], step = 2): number[] {

@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import {
   formatFeelsLikeValue,
   getFeelsLikeComparison,
@@ -31,9 +34,10 @@ export function FeelsLikeText({
   variant = "header",
   showLabel = variant === "header",
 }: FeelsLikeTextProps) {
+  const t = useTranslations("feelsLike");
   const { comparison, delta } = getFeelsLikeComparison(temperature, feelsLike);
   const value = formatFeelsLikeValue(feelsLike, precision);
-  const prefix = showLabel ? "Feels like " : "";
+  const prefix = showLabel ? t("prefix") : "";
 
   if (comparison === "same") {
     return <>{prefix}{value}</>;
@@ -44,7 +48,7 @@ export function FeelsLikeText({
       {prefix}
       {value}{" "}
       <span className={deltaClassNames[comparison][variant]}>
-        · {delta}° {comparison}
+        · {delta}° {t(comparison)}
       </span>
     </>
   );

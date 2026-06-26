@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { getTranslations } from "next-intl/server";
 import { FeelsLikeText } from "@/components/FeelsLikeText";
 import { ForecastDaySection } from "@/components/ForecastDaySection";
 import { WindDirection } from "@/components/WindDirection";
@@ -9,26 +10,27 @@ interface WeatherTableProps {
   forecasts: HourlyForecast[];
 }
 
-export function WeatherTable({ forecasts }: WeatherTableProps) {
+export async function WeatherTable({ forecasts }: WeatherTableProps) {
+  const t = await getTranslations("table");
   const dayGroups = groupForecastsByDay(forecasts);
 
   return (
     <section aria-labelledby="table-heading">
       <h2 id="table-heading" className="mb-3 text-lg font-semibold text-slate-900 dark:text-slate-100">
-        Detailed forecast
+        {t("title")}
       </h2>
       <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
         <table className="min-w-full text-left text-sm">
           <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400">
             <tr>
-              <th className="px-4 py-3 font-medium">Time</th>
-              <th className="px-4 py-3 font-medium">Temp</th>
-              <th className="px-4 py-3 font-medium">Feels</th>
-              <th className="px-4 py-3 font-medium">Precip</th>
-              <th className="px-4 py-3 font-medium">Rain %</th>
-              <th className="px-4 py-3 font-medium">Humidity</th>
-              <th className="px-4 py-3 font-medium">Wind</th>
-              <th className="px-4 py-3 font-medium">Pressure</th>
+              <th className="px-4 py-3 font-medium">{t("time")}</th>
+              <th className="px-4 py-3 font-medium">{t("temp")}</th>
+              <th className="px-4 py-3 font-medium">{t("feels")}</th>
+              <th className="px-4 py-3 font-medium">{t("precip")}</th>
+              <th className="px-4 py-3 font-medium">{t("rainPercent")}</th>
+              <th className="px-4 py-3 font-medium">{t("humidity")}</th>
+              <th className="px-4 py-3 font-medium">{t("wind")}</th>
+              <th className="px-4 py-3 font-medium">{t("pressure")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-slate-800">

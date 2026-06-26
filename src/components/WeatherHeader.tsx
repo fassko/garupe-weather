@@ -1,9 +1,11 @@
 import { format } from "date-fns";
+import { getLocale, getTranslations } from "next-intl/server";
 import { FeelsLikeText } from "@/components/FeelsLikeText";
 import { LocationSwitcher } from "@/components/LocationSwitcher";
 import { WindDirection } from "@/components/WindDirection";
+import { getDateFnsLocale, getDatePattern } from "@/lib/date-locale";
 import { formatCoordinates, openStreetMapUrl } from "@/lib/weather/coordinates";
-import { getConditionEmoji, getConditionLabel } from "@/lib/weather/parse";
+import { getConditionEmoji, getConditionKey } from "@/lib/weather/parse";
 import type { HourlyForecast, WeatherData, WeatherLocationPoint } from "@/lib/weather/types";
 
 function findCurrentForecast(forecasts: HourlyForecast[]): HourlyForecast {
@@ -17,7 +19,11 @@ interface WeatherHeaderProps {
   locations: WeatherLocationPoint[];
 }
 
-export function WeatherHeader({ data, locations }: WeatherHeaderProps) {
+export async function WeatherHeader({ data, locations }: WeatherHeaderProps) {
+  const locale = await getLocale();
+  const t = await getTranslations("header");
+  const tConditions = await getTranslations("conditions");
+  const dateLocale = getDateFnsLocale(locale);
   const current = findCurrentForecast(data.forecasts);
   const selectedLocation = locations.find((location) => location.id === data.location.id);
 
@@ -44,7 +50,7 @@ export function WeatherHeader({ data, locations }: WeatherHeaderProps) {
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-sm font-medium text-sky-100">
-              {format(current.time, "EEEE, d MMMM · HH:mm")}
+              {format(current.time, getDatePattern(locale, "headerDateTime"), { locale: dateLocale })}
             </p>
             <p className="mt-2 text-5xl font-bold tabular-nums">
               {Math.round(current.temperature)}°C
@@ -54,7 +60,7 @@ export function WeatherHeader({ data, locations }: WeatherHeaderProps) {
                 temperature={current.temperature}
                 feelsLike={current.feelsLike}
               />{" "}
-              · {getConditionLabel(current.iconCode)}
+              · {tConditions(getConditionKey(current.iconCode))}
             </p>
           </div>
           <span className="text-5xl" aria-hidden="true">
@@ -64,22 +70,22 @@ export function WeatherHeader({ data, locations }: WeatherHeaderProps) {
 
         <dl className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
           <div>
-            <dt className="text-xs text-sky-200">Humidity</dt>
+            <dt className="text-xs text-sky-200">{t("humidity")}</dt>
             <dd className="text-lg font-semibold">{Math.round(current.humidity)}%</dd>
           </div>
           <div>
-            <dt className="text-xs text-sky-200">Wind</dt>
+            <dt className="text-xs text-sky-200">{t("wind")}</dt>
             <dd className="text-lg font-semibold">
               {current.windSpeed.toFixed(1)} m/s{" "}
               <WindDirection degrees={current.windDirection} />
             </dd>
           </div>
           <div>
-            <dt className="text-xs text-sky-200">Gusts</dt>
+            <dt className="text-xs text-sky-200">{t("gusts")}</dt>
             <dd className="text-lg font-semibold">{current.windGust.toFixed(1)} m/s</dd>
           </div>
           <div>
-            <dt className="text-xs text-sky-200">Rain chance</dt>
+            <dt className="text-xs text-sky-200">{t("rainChance")}</dt>
             <dd className="text-lg font-semibold">
               {Math.round(current.precipitationProbability)}%
             </dd>

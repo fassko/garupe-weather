@@ -1,8 +1,7 @@
-import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeScript } from "@/components/ThemeScript";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { ThemeSync } from "@/components/ThemeSync";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,11 +13,6 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
-export const metadata: Metadata = {
-  title: "Latvia Weather",
-  description: "Hourly weather forecast for Latvia",
-};
 
 export default function RootLayout({
   children,
@@ -35,7 +29,7 @@ export default function RootLayout({
         <ThemeScript />
       </head>
       <body className="min-h-full bg-sky-50 font-sans text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100">
-        <ThemeToggle />
+        <ThemeSync />
         {children}
         <Analytics />
       </body>

@@ -1,6 +1,5 @@
 "use client";
 
-import { format } from "date-fns";
 import { useState, type ReactNode } from "react";
 import { DailyHeaderRow } from "@/components/DailyHeaderRow";
 import type { DailySummary } from "@/lib/weather/daily";

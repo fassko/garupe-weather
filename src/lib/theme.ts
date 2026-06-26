@@ -21,3 +21,12 @@ export function applyTheme(theme: Theme) {
 export function getActiveTheme(): Theme {
   return document.documentElement.classList.contains("dark") ? "dark" : "light";
 }
+
+export function resolveTheme(): Theme {
+  return getStoredTheme() ?? getPreferredTheme();
+}
+
+/** Re-apply the stored theme to `<html>` (e.g. after client-side navigation). */
+export function syncTheme(): void {
+  applyTheme(resolveTheme());
+}

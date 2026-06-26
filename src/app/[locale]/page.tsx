@@ -1,41 +1,58 @@
 import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ForecastError } from "@/components/ForecastError";
 import { StalePageRefresh } from "@/components/StalePageRefresh";
 import { HourlyForecastList } from "@/components/HourlyForecast";
 import { ForecastChartsSection } from "@/components/ForecastChartsSection";
 import { WeatherHeader } from "@/components/WeatherHeader";
 import { WeatherTable } from "@/components/WeatherTable";
+import { routing, type Locale } from "@/i18n/routing";
 import { getHourlyForecast, getLocationPoints } from "@/lib/weather/fetch";
 import { getLocationCookie } from "@/lib/weather/location-cookie.server";
 import { resolveLocationId } from "@/lib/weather/locations";
 
+export const dynamic = "force-dynamic";
+
 interface HomeProps {
+  params: Promise<{ locale: string }>;
   searchParams: Promise<{ punkts?: string }>;
 }
 
-export async function generateMetadata({ searchParams }: HomeProps): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: HomeProps): Promise<Metadata> {
+  const { locale } = await params;
   const { punkts } = await searchParams;
   const savedPunkts = await getLocationCookie();
   const locationId = resolveLocationId(punkts, savedPunkts);
+  const t = await getTranslations({ locale, namespace: "metadata" });
 
   try {
     const data = await getHourlyForecast(locationId);
     return {
-      title: `${data.location.name} Weather`,
-      description: `Hourly weather forecast for ${data.location.name}, Latvia`,
+      title: t("locationTitle", { name: data.location.name }),
+      description: t("locationDescription", { name: data.location.name }),
     };
   } catch {
     return {
-      title: "Latvia Weather",
-      description: "Hourly weather forecast for Latvia",
+      title: t("siteTitle"),
+      description: t("siteDescription"),
     };
   }
 }
 
-export default async function Home({ searchParams }: HomeProps) {
+export default async function Home({ params, searchParams }: HomeProps) {
+  const { locale } = await params;
   const { punkts } = await searchParams;
+
+  if (!routing.locales.includes(locale as Locale)) {
+    return null;
+  }
+
+  setRequestLocale(locale);
+
   const savedPunkts = await getLocationCookie();
   const locationId = resolveLocationId(punkts, savedPunkts);
+  const t = await getTranslations({ locale, namespace: "errors" });
+  const tFooter = await getTranslations({ locale, namespace: "footer" });
 
   let data;
   let locations;
@@ -46,7 +63,7 @@ export default async function Home({ searchParams }: HomeProps) {
       getLocationPoints(),
     ]);
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to load weather data";
+    const message = error instanceof Error ? error.message : t("loadWeatherData");
     return <ForecastError message={message} />;
   }
 
@@ -58,7 +75,7 @@ export default async function Home({ searchParams }: HomeProps) {
       <HourlyForecastList forecasts={data.forecasts} />
       <WeatherTable forecasts={data.forecasts} />
       <footer className="pb-4 text-center text-xs text-slate-500 dark:text-slate-400">
-        Data from{" "}
+        {tFooter("dataFrom")}{" "}
         <a
           href="https://videscentrs.lvgmc.lv/"
           className="underline hover:text-slate-700 dark:hover:text-slate-200"
@@ -67,7 +84,7 @@ export default async function Home({ searchParams }: HomeProps) {
         >
           LVĢMC
         </a>
-        . Updated every 15 minutes.
+        . {tFooter("updatedEvery")}
       </footer>
     </main>
   );

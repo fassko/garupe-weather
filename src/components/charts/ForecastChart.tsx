@@ -1,6 +1,7 @@
 "use client";
 
 import { format, isWeekend } from "date-fns";
+import { useLocale, useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import {
   Bar,
@@ -15,6 +16,7 @@ import {
   YAxis,
 } from "recharts";
 import { ChartCard, useChartColors, WEEKEND_TICK_COLOR } from "@/components/charts/chart-theme";
+import { getDateFnsLocale } from "@/lib/date-locale";
 import {
   filterForecastsByDayCount,
   formatChartTooltipLabel,
@@ -28,12 +30,6 @@ import type { HourlyForecast } from "@/lib/weather/types";
 
 type ForecastPeriod = 1 | 3 | 7;
 
-const PERIOD_OPTIONS: { value: ForecastPeriod; label: string }[] = [
-  { value: 1, label: "Today" },
-  { value: 3, label: "3 days" },
-  { value: 7, label: "7 days" },
-];
-
 interface ForecastChartProps {
   forecasts: HourlyForecast[];
 }
@@ -44,15 +40,27 @@ function getForecastsForPeriod(forecasts: HourlyForecast[], period: ForecastPeri
 }
 
 export function ForecastChart({ forecasts }: ForecastChartProps) {
+  const locale = useLocale();
+  const t = useTranslations("chart");
+  const dateLocale = getDateFnsLocale(locale);
   const [period, setPeriod] = useState<ForecastPeriod>(1);
   const colors = useChartColors();
+
+  const periodOptions: { value: ForecastPeriod; label: string }[] = [
+    { value: 1, label: t("today") },
+    { value: 3, label: t("threeDays") },
+    { value: 7, label: t("sevenDays") },
+  ];
 
   const periodForecasts = useMemo(
     () => getForecastsForPeriod(forecasts, period),
     [forecasts, period],
   );
   const data = useMemo(() => toChartPoints(periodForecasts), [periodForecasts]);
-  const daySegments = useMemo(() => getDaySegments(data), [data]);
+  const daySegments = useMemo(
+    () => getDaySegments(data, dateLocale, locale),
+    [data, dateLocale, locale],
+  );
   const totalPrecip = useMemo(() => sumPrecipitation(periodForecasts), [periodForecasts]);
   const hourTicks = useMemo(() => getHourTicks(data), [data]);
 
@@ -71,6 +79,8 @@ export function ForecastChart({ forecasts }: ForecastChartProps) {
   );
 
   const isMultiDay = period > 1;
+  const temperatureLabel = t("temperature");
+  const precipitationLabel = t("precipitation");
 
   if (data.length === 0) {
     return (
@@ -79,11 +89,11 @@ export function ForecastChart({ forecasts }: ForecastChartProps) {
           id="forecast-chart-heading"
           className="mb-3 text-lg font-semibold text-slate-900 dark:text-slate-100"
         >
-          Temperature & precipitation
+          {t("title")}
         </h2>
         <ChartCard>
           <p className="py-8 text-center text-sm text-slate-500 dark:text-slate-400">
-            No forecast data available.
+            {t("noData")}
           </p>
         </ChartCard>
       </section>
@@ -98,20 +108,20 @@ export function ForecastChart({ forecasts }: ForecastChartProps) {
             id="forecast-chart-heading"
             className="text-lg font-semibold text-slate-900 dark:text-slate-100"
           >
-            Temperature & precipitation
+            {t("title")}
           </h2>
           <p className="text-sm text-slate-500 dark:text-slate-400">
             <span className="font-medium text-slate-700 dark:text-slate-200">
-              {totalPrecip.toFixed(1)} mm total
+              {t("mmTotal", { value: totalPrecip.toFixed(1) })}
             </span>
           </p>
         </div>
         <div
           className="flex rounded-lg border border-slate-200 p-0.5 dark:border-slate-700"
           role="group"
-          aria-label="Forecast period"
+          aria-label={t("periodLabel")}
         >
-          {PERIOD_OPTIONS.map((option) => (
+          {periodOptions.map((option) => (
             <button
               key={option.value}
               type="button"
@@ -221,18 +231,22 @@ export function ForecastChart({ forecasts }: ForecastChartProps) {
                   color: colors.legend,
                   fontSize: "13px",
                 }}
-                itemSorter={(item) => (item.name === "Temperature" ? 0 : 1)}
+                itemSorter={(item) => (item.name === temperatureLabel ? 0 : 1)}
                 formatter={(value, name) => {
                   const num = typeof value === "number" ? value : 0;
-                  if (name === "Temperature") return [`${num.toFixed(1)}°C`, "Temperature"];
-                  return [`${num.toFixed(2)} mm`, "Precipitation"];
+                  if (name === temperatureLabel) {
+                    return [`${num.toFixed(1)}°C`, temperatureLabel];
+                  }
+                  return [`${num.toFixed(2)} mm`, precipitationLabel];
                 }}
-                labelFormatter={formatChartTooltipLabel}
+                labelFormatter={(label, payload) =>
+                  formatChartTooltipLabel(label, payload, dateLocale, locale)
+                }
               />
               <Bar
                 yAxisId="precip"
                 dataKey="precipitation"
-                name="Precipitation"
+                name={precipitationLabel}
                 fill="#38bdf8"
                 fillOpacity={0.7}
                 radius={[2, 2, 0, 0]}
@@ -241,7 +255,7 @@ export function ForecastChart({ forecasts }: ForecastChartProps) {
                 yAxisId="temp"
                 type="monotone"
                 dataKey="temperature"
-                name="Temperature"
+                name={temperatureLabel}
                 stroke="#f97316"
                 strokeWidth={2}
                 dot={false}
@@ -249,7 +263,7 @@ export function ForecastChart({ forecasts }: ForecastChartProps) {
               />
               <Legend
                 wrapperStyle={{ color: colors.legend }}
-                itemSorter={(item) => (item.value === "Temperature" ? 0 : 1)}
+                itemSorter={(item) => (item.value === temperatureLabel ? 0 : 1)}
               />
             </ComposedChart>
           </ResponsiveContainer>

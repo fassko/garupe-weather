@@ -1,16 +1,19 @@
 "use client";
 
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { applyTheme, getActiveTheme, type Theme } from "@/lib/theme";
+import { applyTheme, resolveTheme, type Theme } from "@/lib/theme";
 
 export function ThemeToggle() {
+  const t = useTranslations("theme");
+  const locale = useLocale();
   const [theme, setTheme] = useState<Theme>("light");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setTheme(getActiveTheme());
+    setTheme(resolveTheme());
     setMounted(true);
-  }, []);
+  }, [locale]);
 
   function toggleTheme() {
     const next: Theme = theme === "dark" ? "light" : "dark";
@@ -22,7 +25,7 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={toggleTheme}
-      aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+      aria-label={theme === "dark" ? t("switchToLight") : t("switchToDark")}
       className="fixed top-4 right-4 z-50 flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
     >
       {mounted ? (

@@ -1,0 +1,114 @@
+{
+  "metadata": {
+    "siteTitle": "Latvia Weather",
+    "siteDescription": "Hourly weather forecast for Latvia",
+    "locationTitle": "{name} Weather",
+    "locationDescription": "Hourly weather forecast for {name}, Latvia"
+  },
+  "footer": {
+    "dataFrom": "Data from",
+    "updatedEvery": "Updated every 15 minutes."
+  },
+  "header": {
+    "humidity": "Humidity",
+    "wind": "Wind",
+    "gusts": "Gusts",
+    "rainChance": "Rain chance"
+  },
+  "hourly": {
+    "title": "Hourly forecast",
+    "time": "Time",
+    "condition": "Condition",
+    "temp": "Temp",
+    "precipRain": "Precip / Rain",
+    "chance": "{value}% chance"
+  },
+  "table": {
+    "title": "Detailed forecast",
+    "time": "Time",
+    "temp": "Temp",
+    "feels": "Feels",
+    "precip": "Precip",
+    "rainPercent": "Rain %",
+    "humidity": "Humidity",
+    "wind": "Wind",
+    "pressure": "Pressure"
+  },
+  "chart": {
+    "title": "Temperature & precipitation",
+    "noData": "No forecast data available.",
+    "mmTotal": "{value} mm total",
+    "periodLabel": "Forecast period",
+    "today": "Today",
+    "threeDays": "3 days",
+    "sevenDays": "7 days",
+    "temperature": "Temperature",
+    "precipitation": "Precipitation"
+  },
+  "daily": {
+    "collapse": "Collapse",
+    "expand": "Expand",
+    "hourlyForecastFor": "hourly forecast for {date}",
+    "detailedForecastFor": "detailed forecast for {date}",
+    "mmTotal": "{value} mm total",
+    "upToPercent": "Up to {value}%",
+    "upToWind": "Up to {value} m/s",
+    "avgHumidity": "Avg {value}%",
+    "avgPressure": "Avg {value} hPa"
+  },
+  "feelsLike": {
+    "prefix": "Feels like ",
+    "warmer": "warmer",
+    "colder": "colder"
+  },
+  "wind": {
+    "from": "Wind from {direction}"
+  },
+  "conditions": {
+    "101_day": "Sunny",
+    "101_night": "Clear",
+    "102": "Partly cloudy",
+    "103": "Cloudy",
+    "104": "Overcast",
+    "201": "Fog",
+    "202": "Light fog",
+    "203": "Mist",
+    "204": "Overcast",
+    "301": "Light rain",
+    "302": "Rain",
+    "303": "Heavy rain",
+    "304": "Thunderstorm",
+    "305": "Thunderstorm with rain",
+    "306": "Thunderstorm with hail",
+    "401": "Light snow",
+    "402": "Snow",
+    "403": "Heavy snow",
+    "404": "Sleet",
+    "501": "Light drizzle",
+    "502": "Drizzle",
+    "503": "Freezing rain",
+    "504": "Freezing drizzle",
+    "505": "Rain showers",
+    "506": "Rain showers",
+    "fallback_day": "Day",
+    "fallback_night": "Night"
+  },
+  "errors": {
+    "loadForecast": "Unable to load forecast",
+    "tryAgain": "Try again",
+    "loadWeatherData": "Failed to load weather data",
+    "somethingWrong": "Something went wrong"
+  },
+  "location": {
+    "select": "Select location"
+  },
+  "theme": {
+    "switchToLight": "Switch to light mode",
+    "switchToDark": "Switch to dark mode"
+  },
+  "language": {
+    "switchTo": "Switch to {locale}",
+    "en": "EN",
+    "lv": "LV"
+  }
+}

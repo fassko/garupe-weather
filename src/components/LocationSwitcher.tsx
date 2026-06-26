@@ -1,6 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { setLocationCookie } from "@/lib/weather/location-cookie";
 import { DEFAULT_LOCATION_ID } from "@/lib/weather/locations";
 import { getConditionEmoji } from "@/lib/weather/parse";
@@ -13,6 +14,7 @@ interface LocationSwitcherProps {
 
 export function LocationSwitcher({ locations, selectedId }: LocationSwitcherProps) {
   const router = useRouter();
+  const t = useTranslations("location");
 
   function handleChange(event: React.ChangeEvent<HTMLSelectElement>) {
     const nextId = event.target.value;
@@ -26,7 +28,7 @@ export function LocationSwitcher({ locations, selectedId }: LocationSwitcherProp
 
   return (
     <label className="block">
-      <span className="sr-only">Select location</span>
+      <span className="sr-only">{t("select")}</span>
       <div className="relative inline-flex w-full max-w-md items-center">
         <select
           value={selectedId}

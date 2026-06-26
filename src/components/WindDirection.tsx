@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { getWindDirection } from "@/lib/weather/parse";
 
 interface WindDirectionProps {
@@ -18,12 +21,13 @@ export function WindDirection({
   size = "md",
   className,
 }: WindDirectionProps) {
+  const t = useTranslations("wind");
   const label = getWindDirection(degrees);
 
   return (
     <span
       className={`inline-flex items-center gap-1 ${className ?? ""}`}
-      title={`Wind from ${label}`}
+      title={t("from", { direction: label })}
     >
       <svg
         aria-hidden="true"

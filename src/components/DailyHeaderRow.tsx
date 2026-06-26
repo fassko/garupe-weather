@@ -1,8 +1,10 @@
 "use client";
 
 import { format, isWeekend } from "date-fns";
+import { useLocale, useTranslations } from "next-intl";
 import type { KeyboardEvent } from "react";
 import { WindDirection } from "@/components/WindDirection";
+import { getDateFnsLocale, getDatePattern } from "@/lib/date-locale";
 import { getConditionEmoji } from "@/lib/weather/parse";
 import type { DailySummary } from "@/lib/weather/daily";
 
@@ -27,31 +29,10 @@ function formatRange(min: number, max: number, unit: string): string {
   return `${Math.round(min)}${unit} – ${Math.round(max)}${unit}`;
 }
 
-function formatPrecipSummary(summary: DailySummary): string {
-  if (summary.totalPrecipitation > 0) {
-    return `${summary.totalPrecipitation.toFixed(1)} mm total`;
-  }
-
-  return `Up to ${Math.round(summary.maxPrecipitationProbability)}%`;
-}
-
 function dayLabelClassName(date: Date): string {
   return `whitespace-nowrap px-2 py-2 text-xs font-semibold uppercase tracking-wide sm:px-4${
     isWeekend(date) ? ` ${weekendDateClassName}` : ""
   }`;
-}
-
-function DayLabel({ date, compact = false }: { date: Date; compact?: boolean }) {
-  if (compact) {
-    return (
-      <>
-        <span className="sm:hidden">{format(date, "EEE, MMM d")}</span>
-        <span className="hidden sm:inline">{format(date, "EEEE, MMMM d")}</span>
-      </>
-    );
-  }
-
-  return format(date, "EEEE, MMMM d");
 }
 
 function ExpandArrow({ expanded }: { expanded: boolean }) {
@@ -78,16 +59,31 @@ function DayLabelCell({
   compact,
   expanded,
   showArrow,
+  dateLocale,
+  locale,
 }: {
   date: Date;
   compact?: boolean;
   expanded?: boolean;
   showArrow: boolean;
+  dateLocale: ReturnType<typeof getDateFnsLocale>;
+  locale: string;
 }) {
   return (
     <span className="inline-flex items-center gap-1.5">
       {showArrow ? <ExpandArrow expanded={expanded ?? false} /> : null}
-      <DayLabel date={date} compact={compact} />
+      {compact ? (
+        <>
+          <span className="sm:hidden">
+            {format(date, getDatePattern(locale, "shortDate"), { locale: dateLocale })}
+          </span>
+          <span className="hidden sm:inline">
+            {format(date, getDatePattern(locale, "longDate"), { locale: dateLocale })}
+          </span>
+        </>
+      ) : (
+        format(date, getDatePattern(locale, "longDate"), { locale: dateLocale })
+      )}
     </span>
   );
 }
@@ -99,7 +95,10 @@ export function DailyHeaderRow({
   expanded,
   onToggle,
 }: DailyHeaderRowProps) {
-  const label = format(date, "EEEE, MMMM d");
+  const locale = useLocale();
+  const t = useTranslations("daily");
+  const dateLocale = getDateFnsLocale(locale);
+  const label = format(date, getDatePattern(locale, "longDate"), { locale: dateLocale });
   const rowClassName = onToggle
     ? `${headerRowClassName} cursor-pointer`
     : headerRowClassName;
@@ -115,15 +114,34 @@ export function DailyHeaderRow({
         tabIndex: 0,
         role: "button" as const,
         "aria-expanded": expanded,
-        "aria-label": `${expanded ? "Collapse" : "Expand"} ${variant} forecast for ${label}`,
+        "aria-label": `${expanded ? t("collapse") : t("expand")} ${
+          variant === "hourly"
+            ? t("hourlyForecastFor", { date: label })
+            : t("detailedForecastFor", { date: label })
+        }`,
       }
     : {};
+
+  function formatPrecipSummary(): string {
+    if (summary.totalPrecipitation > 0) {
+      return t("mmTotal", { value: summary.totalPrecipitation.toFixed(1) });
+    }
+
+    return t("upToPercent", { value: Math.round(summary.maxPrecipitationProbability) });
+  }
 
   if (variant === "hourly") {
     return (
       <tr className={rowClassName} {...rowProps}>
         <td className={dayLabelClassName(date)} {...toggleCellProps}>
-          <DayLabelCell date={date} compact expanded={expanded} showArrow={Boolean(onToggle)} />
+          <DayLabelCell
+            date={date}
+            compact
+            expanded={expanded}
+            showArrow={Boolean(onToggle)}
+            dateLocale={dateLocale}
+            locale={locale}
+          />
         </td>
         <td className="px-2 py-2 sm:px-4" {...toggleCellProps}>
           <span aria-hidden="true">{getConditionEmoji(summary.representativeIconCode)}</span>
@@ -135,7 +153,7 @@ export function DailyHeaderRow({
           className="px-2 py-2 text-sm font-semibold tabular-nums text-sky-800 sm:px-4 dark:text-sky-300"
           {...toggleCellProps}
         >
-          {formatPrecipSummary(summary)}
+          {formatPrecipSummary()}
         </td>
       </tr>
     );
@@ -144,7 +162,14 @@ export function DailyHeaderRow({
   return (
     <tr className={rowClassName} {...rowProps}>
       <td className={dayLabelClassName(date)} {...toggleCellProps}>
-        <DayLabelCell date={date} compact expanded={expanded} showArrow={Boolean(onToggle)} />
+        <DayLabelCell
+          date={date}
+          compact
+          expanded={expanded}
+          showArrow={Boolean(onToggle)}
+          dateLocale={dateLocale}
+          locale={locale}
+        />
       </td>
       <td className="px-4 py-2 text-sm font-semibold tabular-nums" {...toggleCellProps}>
         {formatRange(summary.minTemperature, summary.maxTemperature, "°C")}
@@ -156,20 +181,20 @@ export function DailyHeaderRow({
         {summary.totalPrecipitation.toFixed(1)} mm
       </td>
       <td className="px-4 py-2 text-sm font-semibold tabular-nums" {...toggleCellProps}>
-        Up to {Math.round(summary.maxPrecipitationProbability)}%
+        {t("upToPercent", { value: Math.round(summary.maxPrecipitationProbability) })}
       </td>
       <td className="px-4 py-2 text-sm font-semibold tabular-nums" {...toggleCellProps}>
-        Avg {Math.round(summary.avgHumidity)}%
+        {t("avgHumidity", { value: Math.round(summary.avgHumidity) })}
       </td>
       <td
         className="whitespace-nowrap px-4 py-2 text-sm font-semibold tabular-nums"
         {...toggleCellProps}
       >
-        Up to {summary.maxWindSpeed.toFixed(1)} m/s{" "}
+        {t("upToWind", { value: summary.maxWindSpeed.toFixed(1) })}{" "}
         <WindDirection degrees={summary.windDirectionAtMaxWind} size="sm" />
       </td>
       <td className="px-4 py-2 text-sm font-semibold tabular-nums" {...toggleCellProps}>
-        Avg {summary.avgPressure.toFixed(1)} hPa
+        {t("avgPressure", { value: summary.avgPressure.toFixed(1) })}
       </td>
     </tr>
   );
