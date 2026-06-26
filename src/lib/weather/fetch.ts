@@ -55,6 +55,8 @@ export async function getLocationPoints(time?: Date): Promise<WeatherLocationPoi
       id: point.punkts,
       name: point.nosaukums,
       region: point.novads,
+      lat: parseNumber(point.lat),
+      lon: parseNumber(point.lon),
       temperature: parseNumber(point.temperatura),
       iconCode: point.laika_apstaklu_ikona,
     }))
@@ -85,6 +87,8 @@ export async function getHourlyForecast(punkts: string): Promise<WeatherData> {
       id: first.punkts,
       name: first.nosaukums,
       region: first.novads,
+      lat: 0,
+      lon: 0,
     },
     forecasts: raw.map(parseHourlyForecast),
   };

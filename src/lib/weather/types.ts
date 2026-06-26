@@ -40,6 +40,8 @@ export interface WeatherLocation {
   id: string;
   name: string;
   region: string;
+  lat: number;
+  lon: number;
 }
 
 export interface WeatherPointForecastRaw {
