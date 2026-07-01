@@ -33,7 +33,7 @@ export function LanguageSwitcher() {
           aria-pressed={locale === loc}
           aria-label={t("switchTo", { locale: t(loc) })}
           onClick={() => switchLocale(loc)}
-          className={`rounded-full px-2.5 py-1.5 text-xs font-semibold transition-colors ${
+          className={`rounded-full px-2.5 py-1.5 text-xs font-semibold transition-colors landscape:px-2 landscape:py-1 ${
             locale === loc
               ? "bg-sky-500 text-white"
               : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700"

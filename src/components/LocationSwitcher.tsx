@@ -29,7 +29,7 @@ export function LocationSwitcher({ locations, selectedId }: LocationSwitcherProp
   return (
     <label className="block">
       <span className="sr-only">{t("select")}</span>
-      <div className="relative inline-flex w-full max-w-md items-center">
+      <div className="relative flex w-full max-w-md items-center landscape:max-w-none">
         <select
           value={selectedId}
           onChange={handleChange}
