@@ -30,6 +30,10 @@ export async function WeatherHeader({ data }: WeatherHeaderProps) {
   const dateLocale = getDateFnsLocale(locale);
   const current = findCurrentForecast(data.forecasts);
   const headerTheme = getWeatherHeaderTheme(current.iconCode);
+  const showRegion =
+    data.location.region.localeCompare(data.location.name, locale, {
+      sensitivity: "accent",
+    }) !== 0;
 
   const extraStats: Array<{ label: string; value: string }> = [];
 
