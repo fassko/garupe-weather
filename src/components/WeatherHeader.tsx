@@ -55,9 +55,10 @@ export async function WeatherHeader({ data }: WeatherHeaderProps) {
   return (
     <header className="space-y-4">
       <div className="space-y-3">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-          <div className="min-w-0 sm:flex-1">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+          <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
             <LocationCombobox selectedId={data.location.id} selectedName={data.location.name} />
+            <LocationCoordinates locationId={data.location.id} />
           </div>
           <div className="flex shrink-0 items-center gap-2 self-end sm:self-auto">
             <Suspense fallback={null}>
@@ -70,7 +71,6 @@ export async function WeatherHeader({ data }: WeatherHeaderProps) {
           </div>
         </div>
         <p className="text-slate-600 dark:text-slate-400">{data.location.region}</p>
-        <LocationCoordinates locationId={data.location.id} />
       </div>
 
       <div

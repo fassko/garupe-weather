@@ -111,7 +111,7 @@ export function LocationCombobox({ selectedId, selectedName }: LocationComboboxP
   }
 
   return (
-    <div ref={containerRef} className="relative w-full max-w-md">
+    <div ref={containerRef} className={`relative ${open ? "w-full max-w-md" : "inline-block"}`}>
       {open ? (
         <div className="rounded-xl border border-sky-300 bg-white shadow-lg dark:border-sky-600 dark:bg-slate-900">
           <div className="flex items-center gap-2 border-b border-slate-200 px-3 py-2 dark:border-slate-700">
@@ -186,7 +186,7 @@ export function LocationCombobox({ selectedId, selectedName }: LocationComboboxP
           onClick={handleOpen}
           aria-haspopup="listbox"
           aria-expanded={false}
-          className="flex w-full items-center justify-between gap-2 rounded-xl border border-slate-200 bg-white py-2.5 pr-3 pl-4 text-left text-lg font-bold tracking-tight text-slate-900 shadow-sm transition hover:border-sky-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:border-sky-600 dark:focus:border-sky-500"
+          className="inline-flex items-center gap-1.5 rounded-lg py-1 pr-1 pl-0 text-left text-lg font-bold tracking-tight text-slate-900 transition hover:text-sky-700 focus:text-sky-700 focus:ring-2 focus:ring-sky-500/20 focus:outline-none dark:text-slate-100 dark:hover:text-sky-300 dark:focus:text-sky-300"
         >
           <span className="truncate">{selectedName}</span>
           <ChevronIcon />

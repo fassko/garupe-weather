@@ -38,7 +38,10 @@ export function LocationCoordinates({ locationId }: LocationCoordinatesProps) {
   if (!coords) return null;
 
   return (
-    <p className="text-sm text-slate-500 dark:text-slate-400">
+    <span className="inline-flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+      <span aria-hidden="true" className="text-slate-400 dark:text-slate-500">
+        ·
+      </span>
       <a
         href={openStreetMapUrl(coords.lat, coords.lon)}
         target="_blank"
@@ -47,6 +50,6 @@ export function LocationCoordinates({ locationId }: LocationCoordinatesProps) {
       >
         {formatCoordinates(coords.lat, coords.lon)}
       </a>
-    </p>
+    </span>
   );
 }
