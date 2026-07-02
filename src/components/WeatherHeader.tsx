@@ -71,16 +71,16 @@ export async function WeatherHeader({ data }: WeatherHeaderProps) {
         <LocationCoordinates locationId={data.location.id} />
       </div>
 
-      <div className="rounded-2xl bg-gradient-to-br from-sky-500 to-sky-700 p-6 text-white shadow-lg dark:from-sky-600 dark:to-sky-900 dark:shadow-sky-950/30">
+      <div className="rounded-2xl bg-gradient-to-br from-sky-500 to-sky-700 p-7 text-white shadow-lg sm:p-8 dark:from-sky-600 dark:to-sky-900 dark:shadow-sky-950/30">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-sm font-medium text-sky-100">
+            <p className="text-base font-medium text-sky-100">
               {format(current.time, getDatePattern(locale, "headerDateTime"), { locale: dateLocale })}
             </p>
-            <p className="mt-2 text-5xl font-bold tabular-nums">
+            <p className="mt-2 text-6xl font-bold tabular-nums sm:text-7xl">
               {Math.round(current.temperature)}°C
             </p>
-            <p className="mt-1 text-sky-100">
+            <p className="mt-2 text-base text-sky-100 sm:text-lg">
               <FeelsLikeText
                 temperature={current.temperature}
                 feelsLike={current.feelsLike}
@@ -88,37 +88,37 @@ export async function WeatherHeader({ data }: WeatherHeaderProps) {
               · {tConditions(getConditionKey(current.iconCode))}
             </p>
           </div>
-          <span className="text-5xl" aria-hidden="true">
+          <span className="text-6xl sm:text-7xl" aria-hidden="true">
             {getConditionEmoji(current.iconCode)}
           </span>
         </div>
 
-        <dl className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        <dl className="mt-7 grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4">
           <div>
-            <dt className="text-xs text-sky-200">{t("humidity")}</dt>
-            <dd className="text-lg font-semibold">{Math.round(current.humidity)}%</dd>
+            <dt className="text-sm text-sky-200">{t("humidity")}</dt>
+            <dd className="text-xl font-semibold">{Math.round(current.humidity)}%</dd>
           </div>
           <div>
-            <dt className="text-xs text-sky-200">{t("wind")}</dt>
-            <dd className="text-lg font-semibold">
+            <dt className="text-sm text-sky-200">{t("wind")}</dt>
+            <dd className="text-xl font-semibold">
               {current.windSpeed.toFixed(1)} m/s{" "}
               <WindDirection degrees={current.windDirection} />
             </dd>
           </div>
           <div>
-            <dt className="text-xs text-sky-200">{t("gusts")}</dt>
-            <dd className="text-lg font-semibold">{current.windGust.toFixed(1)} m/s</dd>
+            <dt className="text-sm text-sky-200">{t("gusts")}</dt>
+            <dd className="text-xl font-semibold">{current.windGust.toFixed(1)} m/s</dd>
           </div>
           <div>
-            <dt className="text-xs text-sky-200">{t("rainChance")}</dt>
-            <dd className="text-lg font-semibold">
+            <dt className="text-sm text-sky-200">{t("rainChance")}</dt>
+            <dd className="text-xl font-semibold">
               {Math.round(current.precipitationProbability)}%
             </dd>
           </div>
           {extraStats.map((stat) => (
             <div key={stat.label}>
-              <dt className="text-xs text-sky-200">{stat.label}</dt>
-              <dd className="text-lg font-semibold">{stat.value}</dd>
+              <dt className="text-sm text-sky-200">{stat.label}</dt>
+              <dd className="text-xl font-semibold">{stat.value}</dd>
             </div>
           ))}
         </dl>
