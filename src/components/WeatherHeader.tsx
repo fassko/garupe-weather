@@ -66,12 +66,12 @@ export async function WeatherHeader({ data }: WeatherHeaderProps) {
           </div>
           <div className="flex shrink-0 items-center gap-2 self-end sm:self-auto">
             <Suspense fallback={null}>
-              <ShareButton />
-            </Suspense>
-            <Suspense fallback={null}>
               <LanguageSwitcher />
             </Suspense>
             <ThemeToggle />
+            <Suspense fallback={null}>
+              <ShareButton />
+            </Suspense>
           </div>
         </div>
         {locationSubtitle ? (
