@@ -9,6 +9,7 @@ import { ShareButton } from "@/components/ShareButton";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { WindDirection } from "@/components/WindDirection";
 import { getDateFnsLocale, getDatePattern } from "@/lib/date-locale";
+import { getWeatherHeaderTheme } from "@/lib/weather/header-theme";
 import { getConditionEmoji, getConditionKey } from "@/lib/weather/parse";
 import type { HourlyForecast, WeatherData } from "@/lib/weather/types";
 
@@ -28,6 +29,7 @@ export async function WeatherHeader({ data }: WeatherHeaderProps) {
   const tConditions = await getTranslations("conditions");
   const dateLocale = getDateFnsLocale(locale);
   const current = findCurrentForecast(data.forecasts);
+  const headerTheme = getWeatherHeaderTheme(current.iconCode);
 
   const extraStats: Array<{ label: string; value: string }> = [];
 
@@ -71,16 +73,18 @@ export async function WeatherHeader({ data }: WeatherHeaderProps) {
         <LocationCoordinates locationId={data.location.id} />
       </div>
 
-      <div className="rounded-2xl bg-gradient-to-br from-sky-500 to-sky-700 p-7 text-white shadow-lg sm:p-8 dark:from-sky-600 dark:to-sky-900 dark:shadow-sky-950/30">
+      <div
+        className={`rounded-2xl p-7 sm:p-8 ${headerTheme.card} ${headerTheme.shadow} ${headerTheme.text}`}
+      >
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-base font-medium text-sky-100">
+            <p className={`text-base font-medium ${headerTheme.muted}`}>
               {format(current.time, getDatePattern(locale, "headerDateTime"), { locale: dateLocale })}
             </p>
             <p className="mt-2 text-6xl font-bold tabular-nums sm:text-7xl">
               {Math.round(current.temperature)}°C
             </p>
-            <p className="mt-2 text-base text-sky-100 sm:text-lg">
+            <p className={`mt-2 text-base sm:text-lg ${headerTheme.muted}`}>
               <FeelsLikeText
                 temperature={current.temperature}
                 feelsLike={current.feelsLike}
@@ -95,29 +99,29 @@ export async function WeatherHeader({ data }: WeatherHeaderProps) {
 
         <dl className="mt-7 grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4">
           <div>
-            <dt className="text-sm text-sky-200">{t("humidity")}</dt>
+            <dt className={`text-sm ${headerTheme.statLabel}`}>{t("humidity")}</dt>
             <dd className="text-xl font-semibold">{Math.round(current.humidity)}%</dd>
           </div>
           <div>
-            <dt className="text-sm text-sky-200">{t("wind")}</dt>
+            <dt className={`text-sm ${headerTheme.statLabel}`}>{t("wind")}</dt>
             <dd className="text-xl font-semibold">
               {current.windSpeed.toFixed(1)} m/s{" "}
               <WindDirection degrees={current.windDirection} />
             </dd>
           </div>
           <div>
-            <dt className="text-sm text-sky-200">{t("gusts")}</dt>
+            <dt className={`text-sm ${headerTheme.statLabel}`}>{t("gusts")}</dt>
             <dd className="text-xl font-semibold">{current.windGust.toFixed(1)} m/s</dd>
           </div>
           <div>
-            <dt className="text-sm text-sky-200">{t("rainChance")}</dt>
+            <dt className={`text-sm ${headerTheme.statLabel}`}>{t("rainChance")}</dt>
             <dd className="text-xl font-semibold">
               {Math.round(current.precipitationProbability)}%
             </dd>
           </div>
           {extraStats.map((stat) => (
             <div key={stat.label}>
-              <dt className="text-sm text-sky-200">{stat.label}</dt>
+              <dt className={`text-sm ${headerTheme.statLabel}`}>{stat.label}</dt>
               <dd className="text-xl font-semibold">{stat.value}</dd>
             </div>
           ))}
